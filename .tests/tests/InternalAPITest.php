@@ -1212,7 +1212,7 @@ class InternalAPITest extends UloggerAPITestCase {
     $json = json_decode($response->getBody());
     self::assertNotNull($json, "JSON object is null");
     self::assertEquals(1, (int) $json->error, "Wrong error status");
-    self::assertEquals($lang["servererror"], (string) $json->message, "Wrong error message");
+    self::assertEquals($lang["notauthorized"], (string) $json->message, "Wrong error message");
     self::assertEquals(2, $this->getConnection()->getRowCount("users"), "Wrong row count");
 
   }
@@ -1234,7 +1234,7 @@ class InternalAPITest extends UloggerAPITestCase {
     $json = json_decode($response->getBody());
     self::assertNotNull($json, "JSON object is null");
     self::assertEquals(1, (int) $json->error, "Wrong error status");
-    self::assertEquals($lang["servererror"], (string) $json->message, "Wrong error message");
+    self::assertEquals($lang["notauthorized"], (string) $json->message, "Wrong error message");
     self::assertEquals(1, $this->getConnection()->getRowCount("users"), "Wrong row count");
   }
 
@@ -1277,7 +1277,7 @@ class InternalAPITest extends UloggerAPITestCase {
     $json = json_decode($response->getBody());
     self::assertNotNull($json, "JSON object is null");
     self::assertEquals(1, (int) $json->error, "Wrong error status");
-    self::assertEquals($lang["servererror"], (string) $json->message, "Wrong error message");
+    self::assertEquals($lang["notauthorized"], (string) $json->message, "Wrong error message");
     self::assertEquals(2, $this->getConnection()->getRowCount("users"), "Wrong row count");
   }
 
