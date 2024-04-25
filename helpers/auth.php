@@ -195,7 +195,16 @@ class uAuth {
    * @return bool True if has access
    */
   public function hasReadAccess($ownerId) {
-    return $this->hasReadWriteAccess($ownerId) || uConfig::getInstance()->publicTracks;
+    return $this->hasReadWriteAccess($ownerId) || $this->hasPublicReadAccess();
+  }
+
+  /**
+   * Check session user has RO access to all resources
+
+   * @return bool True if has access
+   */
+  public function hasPublicReadAccess() {
+    return ($this->isAuthenticated() || !uConfig::getInstance()->requireAuthentication) && uConfig::getInstance()->publicTracks;
   }
 
 }
