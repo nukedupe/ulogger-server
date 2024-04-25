@@ -81,7 +81,7 @@ if ($getopt->getOption('help')) {
 }
 
 // get all tracks for user id
-$userId = $getopt->getOption('user-id');
+$userId = (int) $getopt->getOption('user-id');
 if (!$getopt->getOption('import-existing-track')) {
   $tracksArr = uTrack::getAll($userId);
 }
@@ -135,10 +135,10 @@ foreach ($gpxFiles as $i => $gpxFile) {
     uUtils::exitWithError($lang["idatafailure"]);
   }
 
-  $trackCnt = 0;
+  $trackList = [];
   foreach ($gpx->trk as $trk) {
     $trackName = empty($trk->name) ? $gpxName : (string) $trk->name;
-    $metaName = empty($gpx->metadata->name) ? NULL : (string) $gpx->metadata->name;
+    $metaName = empty($gpx->metadata->name) ? null : (string) $gpx->metadata->name;
     $trackId = uTrack::add($userId, $trackName, $metaName);
     if ($trackId === false) {
       uUtils::exitWithError($lang["servererror"]);
@@ -149,15 +149,16 @@ foreach ($gpxFiles as $i => $gpxFile) {
 
     foreach($trk->trkseg as $segment) {
       foreach($segment->trkpt as $point) {
-        if (!isset($point["lat"]) || !isset($point["lon"])) {
+        if (!isset($point["lat"], $point["lon"])) {
           $track->delete();
           uUtils::exitWithError($lang["iparsefailure"]);
         }
-        $time = isset($point->time) ? strtotime($point->time) : 0;
-        $altitude = isset($point->ele) ? (double) $point->ele : NULL;
-        $speed = NULL;
-        $bearing = NULL;
-        $accuracy = NULL;
+        $time = isset($point->time) ? strtotime($point->time) : 1;
+        $altitude = isset($point->ele) ? (double) $point->ele : null;
+        $comment = isset($point->desc) && !empty($point->desc) ? (string) $point->desc : null;
+        $speed = null;
+        $bearing = null;
+        $accuracy = null;
         $provider = "gps";
         if (!empty($point->extensions)) {
           // parse ulogger extensions
@@ -169,7 +170,7 @@ foreach ($gpxFiles as $i => $gpxFile) {
         }
         $ret = $track->addPosition($userId,
           $time, (double) $point["lat"], (double) $point["lon"], $altitude,
-          $speed, $bearing, $accuracy, $provider, NULL, NULL);
+          $speed, $bearing, $accuracy, $provider, $comment);
         if ($ret === false) {
           $track->delete();
           uUtils::exitWithError($lang["servererror"]);
@@ -178,7 +179,7 @@ foreach ($gpxFiles as $i => $gpxFile) {
       }
     }
     if ($posCnt) {
-      $trackCnt++;
+      array_unshift($trackList, [ "id" => $track->id, "name" => $track->name ]);
     } else {
       $track->delete();
     }

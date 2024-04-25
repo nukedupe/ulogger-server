@@ -32,16 +32,17 @@ $admin = uUtils::postBool('admin', false);
 
 $lang = (new uLang($config))->getStrings();
 
-if (($auth->user && $auth->user->login === $login) || empty($action) || empty($login) || !$auth->isAuthenticated() || !$auth->isAdmin()) {
-  uUtils::exitWithError($lang["servererror"]);
-}
-
-if ($admin && !$auth->isAdmin()) {
+if (($auth->user && $auth->user->login === $login) || !$auth->isAdmin()) {
   uUtils::exitWithError($lang["notauthorized"]);
 }
 
+if (empty($action) || empty($login)) {
+  uUtils::exitWithError($lang["servererror"]);
+}
+
+
 $aUser = new uUser($login);
-$data = NULL;
+$data = null;
 
 switch ($action) {
   case 'add':

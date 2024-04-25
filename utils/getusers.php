@@ -26,7 +26,7 @@ $auth = new uAuth();
 $config = uConfig::getInstance();
 
 $usersArr = [];
-if ($config->publicTracks || $auth->isAdmin()) {
+if ($auth->hasPublicReadAccess() || $auth->isAdmin()) {
   $usersArr = uUser::getAll();
 } else if ($auth->isAuthenticated()) {
   $usersArr = [ $auth->user ];
